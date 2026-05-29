@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "opc": {
+      "type": "http",
+      "url": "https://www.myopc.io/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${OPC_API_TOKEN}"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "opc",
+  "version": "0.3.0",
+  "description": "Connect Codex to your OPC Suite workspace. Manage contacts, sales orders, inventory, accounting, HRM, payroll, projects, expense claims, and documents — all from natural language inside Codex.",
+  "author": {
+    "name": "OPC Suite",
+    "url": "https://www.myopc.io"
+  },
+  "homepage": "https://www.myopc.io/dashboard/settings/developer",
+  "repository": "https://github.com/tsa-ai/opc-suite",
+  "license": "MIT",
+  "keywords": [
+    "crm",
+    "erp",
+    "sales",
+    "accounting",
+    "expense-claims",
+    "hrm",
+    "payroll",
+    "inventory",
+    "productivity",
+    "business-operations"
+  ],
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OPC Business Operations",
+    "shortDescription": "CRM, sales, inventory, accounting, HR & expense claims via AI",
+    "longDescription": "OPC Suite is an all-in-one business operations platform for SMBs. With this plugin Codex can read and write contacts, leads, deals, sales orders, quotations, products, inventory, suppliers, purchases, accounting (P&L, balance sheet, journals, AR/AP), HRM (employees, leave, attendance), payroll, projects, support tickets, expense claims and the documents library — all gated by your personal API token's scopes.",
+    "developerName": "OPC Suite",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://www.myopc.io",
+    "privacyPolicyURL": "https://www.myopc.io/privacy",
+    "termsOfServiceURL": "https://www.myopc.io/terms",
+    "defaultPrompt": [
+      "List my pending expense claims and summarise total amount.",
+      "Show me today's sales orders grouped by customer.",
+      "Create a new contact for Acme Corp with primary contact john@acme.com.",
+      "What's my Profit & Loss for last month?",
+      "Find all overdue invoices and draft polite reminder emails."
+    ],
+    "brandColor": "#4F46E5",
+    "logo": "./assets/logo.svg",
+    "composerIcon": "./assets/icon.svg"
+  }
+}
