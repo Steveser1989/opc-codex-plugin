@@ -39,10 +39,11 @@ env = { OPC_API_TOKEN = "opc_pat_…", OPC_AGENT_KIND = "codex" }
 ## What's in this repo
 
 ```
-.codex-plugin/
-├── plugin.json          ← Codex plugin manifest
+.
+├── .codex-plugin/
+│   └── plugin.json      ← Codex plugin manifest (spec-required location)
 ├── .mcp.json            ← MCP server config (points to https://www.myopc.io/api/mcp)
-├── assets/              ← logo + icon
+├── assets/              ← logo + icon (PNG 256×256 + SVG sources)
 └── skills/
     ├── expense-claim/   ← Skill: file an expense claim from a receipt
     └── sales-overview/  ← Skill: pull a sales pipeline summary
