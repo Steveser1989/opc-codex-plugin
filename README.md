@@ -13,59 +13,65 @@ OPC Suite gives any AI agent secure, audit-logged access to a complete business 
 
 ---
 
-## ⚡ Quick start (3 steps)
+## ⚡ Quick start (2 commands, no token setup)
 
-### 1. Install from Codex Plugin Marketplace
+### 1. Install from the Codex Plugin Marketplace
 
 ```bash
 codex plugin install opc
 ```
 
-This adds an `opc` MCP server to `~/.codex/config.toml` that runs the local stdio bridge `@tsa-ai/opc-mcp-server` (auto-fetched via `npx`).
-
-### 2. Generate your Personal API Token
-
-Visit **[myopc.io/dashboard/settings/developer/ai-connections](https://www.myopc.io/dashboard/settings/developer/ai-connections)**:
-
-1. Click the **Codex CLI** preset
-2. Pick the scopes you want this token to have (e.g. `contacts.read`, `sales.write`, `accounting.read`)
-3. Click **Generate token** — copy the resulting `opc_pat_xxxxxxxxxxxxxxxx`
-
-### 3. Export the token before starting Codex
+### 2. One-click OAuth — Codex opens your browser, you click Approve
 
 ```bash
-export OPC_API_TOKEN="opc_pat_xxxxxxxxxxxxxxxx"
-codex
+codex mcp login opc
 ```
 
-That's it. Try a starter prompt:
+Codex will:
 
-> "List my pending expense claims and summarise total amount."
+1. Spin up a local OAuth callback server
+2. Open `https://www.myopc.io/oauth/authorize?...` in your browser
+3. (If you're not signed into OPC yet, you'll be bounced to the login page first)
+4. Show OPC's **consent screen** — pick the scopes you want Codex to have (e.g. `contacts.read`, `sales.write`, `accounting.read`)
+5. After you click **Approve**, Codex receives the token and stores it securely in `~/.codex/auth/`
 
-> "What's my Profit & Loss for last month?"
+**That's it.** No tokens to copy. No environment variables. No `~/.codex/config.toml` edits.
 
-> "Find all overdue invoices and draft polite reminder emails."
+```bash
+codex
+> List my pending expense claims and summarise total amount.
+```
+
+> 💡 **Codex Desktop users**: this OAuth flow is triggered **automatically** the first time the agent tries to call an OPC tool. You can skip step 2 and just say *"List my expense claims"* — Codex will pop the consent screen by itself.
 
 ---
 
 ## 🔐 How auth works
 
-The plugin's `.mcp.json` references `${OPC_API_TOKEN}` — Codex resolves this from your shell environment at startup and forwards it as a Bearer token to `https://www.myopc.io/api/mcp` on every tool call.
+Under the hood, OPC implements full **OAuth 2.1 + PKCE + Dynamic Client Registration**:
 
-To make the token persistent across sessions, add the export to your shell profile:
+- The plugin's `.mcp.json` declares OPC as a streamable HTTP MCP server at `https://www.myopc.io/api/mcp`
+- On first call, the server returns `401` + `WWW-Authenticate: Bearer resource_metadata=...`
+- Codex follows the metadata to discover OPC's authorization endpoints (RFC 8414 / RFC 9728)
+- Codex auto-registers itself via Dynamic Client Registration (RFC 7591)
+- Browser-based PKCE flow → user consent → bearer token issued
+- Token is scoped to whatever you approved, refreshable, and revocable from **Settings → Developer** at any time
 
-```bash
-# ~/.zshrc or ~/.bashrc
-export OPC_API_TOKEN="opc_pat_xxxxxxxxxxxxxxxx"
-```
-
-Tokens are scoped — Codex only sees tools your scopes allow. You can rotate, revoke, or re-scope tokens at any time from the same wizard. Every tool call is audited (agent name, latency, status) and viewable in the **Usage** tab.
+Every tool call is audit-logged (agent name, scopes used, latency, status).
 
 ---
 
-## Manual install (without Marketplace)
+## 🛠️ Advanced fallback — Personal API Token (for non-OAuth Codex builds)
 
-If you'd rather skip the Codex Marketplace and wire it up by hand, paste this into `~/.codex/config.toml`:
+If you're on an older Codex version without MCP OAuth support, or you'd prefer to manage the token yourself, you can fall back to a Personal API Token (PAT):
+
+### 1. Generate a token
+
+Visit **[myopc.io/dashboard/settings/developer/ai-connections](https://www.myopc.io/dashboard/settings/developer/ai-connections)**, pick the **Codex CLI** preset, choose your scopes, and copy the resulting `opc_pat_xxxxxxxxxxxxxxxx`.
+
+### 2. Use the local stdio bridge
+
+Replace the OAuth `[mcp_servers.opc]` entry in `~/.codex/config.toml` with the stdio bridge form:
 
 ```toml
 [mcp_servers.opc]
@@ -74,7 +80,9 @@ args = ["-y", "@tsa-ai/opc-mcp-server"]
 env = { OPC_BASE_URL = "https://www.myopc.io", OPC_API_TOKEN = "opc_pat_xxxxxxxxxxxxxxxx", OPC_AGENT_KIND = "codex" }
 ```
 
-The bridge package is on npm: [`@tsa-ai/opc-mcp-server`](https://www.npmjs.com/package/@tsa-ai/opc-mcp-server). Pre-installing globally is optional (`npm install -g @tsa-ai/opc-mcp-server`) — `npx -y` will fetch the latest on first run.
+The bridge package is on npm: [`@tsa-ai/opc-mcp-server`](https://www.npmjs.com/package/@tsa-ai/opc-mcp-server). It's a thin pipe to the same hosted endpoint, so server-side tool catalog upgrades reach you without re-installing.
+
+This path works on every Codex version (CLI and Desktop, old and new) but skips the polished consent UI.
 
 ---
 
@@ -84,14 +92,14 @@ The bridge package is on npm: [`@tsa-ai/opc-mcp-server`](https://www.npmjs.com/p
 .
 ├── .codex-plugin/
 │   └── plugin.json      ← Codex plugin manifest (spec-required location)
-├── .mcp.json            ← MCP server config — stdio bridge to https://www.myopc.io/api/mcp
+├── .mcp.json            ← MCP server config — streamable HTTP w/ OAuth discovery
 ├── assets/              ← logo + icon (PNG 256×256 + SVG sources)
 └── skills/
     ├── expense-claim/   ← Skill: file an expense claim from a receipt
     └── sales-overview/  ← Skill: pull a sales pipeline summary
 ```
 
-The actual MCP server source lives at [`Steveser1989/Main-MY-OPC-System/packages/opc-mcp`](https://github.com/Steveser1989) and is published to npm as [`@tsa-ai/opc-mcp-server`](https://www.npmjs.com/package/@tsa-ai/opc-mcp-server). All tools are served from `https://www.myopc.io/api/mcp` so upgrades reach every connected agent without users having to update this package.
+The actual MCP server source lives at [`Steveser1989/Main-MY-OPC-System/packages/opc-mcp`](https://github.com/Steveser1989) and the OAuth + tool endpoints are served from `https://www.myopc.io/api/mcp`. All upgrades happen server-side — every connected agent picks them up immediately.
 
 ---
 
@@ -99,6 +107,7 @@ The actual MCP server source lives at [`Steveser1989/Main-MY-OPC-System/packages
 
 - 🌐 Website — https://www.myopc.io
 - 📖 Connect wizard — https://www.myopc.io/dashboard/settings/developer/ai-connections
+- 🔐 OAuth metadata — https://www.myopc.io/.well-known/oauth-authorization-server
 - 📦 npm — https://www.npmjs.com/package/@tsa-ai/opc-mcp-server
 - 🗂️ MCP Registry — `io.github.Steveser1989/opc-mcp-server`
 - 🛍️ Codex Marketplace — https://www.codex-marketplace.com/plugins/opc

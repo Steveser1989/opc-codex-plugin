@@ -1,6 +1,6 @@
 {
   "name": "opc",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Connect Codex to your OPC Suite workspace. Manage contacts, sales orders, inventory, accounting, HRM, payroll, projects, expense claims, and documents — all from natural language inside Codex.",
   "author": {
     "name": "OPC Suite",
@@ -25,8 +25,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "OPC Business Operations",
-    "shortDescription": "CRM, sales, inventory, accounting, HR & expense claims via AI",
-    "longDescription": "OPC Suite is an all-in-one business operations platform for SMBs. With this plugin Codex can read and write contacts, leads, deals, sales orders, quotations, products, inventory, suppliers, purchases, accounting (P&L, balance sheet, journals, AR/AP), HRM (employees, leave, attendance), payroll, projects, support tickets, expense claims and the documents library — all gated by your personal API token's scopes.\n\nAfter install, generate a Personal API Token at https://www.myopc.io/dashboard/settings/developer/ai-connections (pick scopes per tool, copy the token), then run `export OPC_API_TOKEN=opc_pat_...` before starting Codex. The wizard prints the exact `~/.codex/config.toml` snippet for you.",
+    "shortDescription": "CRM, sales, inventory, accounting, HR & expense claims via AI — one-click OAuth, no token setup",
+    "longDescription": "OPC Suite is an all-in-one business operations platform for SMBs. With this plugin Codex can read and write contacts, leads, deals, sales orders, quotations, products, inventory, suppliers, purchases, accounting (P&L, balance sheet, journals, AR/AP), HRM (employees, leave, attendance), payroll, projects, support tickets, expense claims and the documents library — all gated by the scopes you grant.\n\n🔐 ONE-CLICK OAUTH: After install, run `codex mcp login opc` and Codex opens your browser to OPC's secure consent page. Pick the scopes you want to grant, click Approve, and you're connected — no token copy-paste, no environment variables. Codex Desktop triggers this flow automatically the first time the agent calls an OPC tool.\n\nEvery tool call is audit-logged with the calling agent, latency, and status; you can revoke access anytime from Settings → Developer.",
     "developerName": "OPC Suite",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
