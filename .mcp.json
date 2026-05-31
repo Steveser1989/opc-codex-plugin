@@ -1,10 +1,12 @@
 {
   "mcpServers": {
     "opc": {
-      "type": "http",
-      "url": "https://www.myopc.io/api/mcp",
-      "headers": {
-        "Authorization": "Bearer ${OPC_API_TOKEN}"
+      "command": "npx",
+      "args": ["-y", "@tsa-ai/opc-mcp-server"],
+      "env": {
+        "OPC_BASE_URL": "https://www.myopc.io",
+        "OPC_API_TOKEN": "${OPC_API_TOKEN}",
+        "OPC_AGENT_KIND": "codex"
       }
     }
   }
