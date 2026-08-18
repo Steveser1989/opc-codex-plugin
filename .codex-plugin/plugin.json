@@ -1,6 +1,6 @@
 {
   "name": "opc",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Connect Codex to your OPC Suite workspace. Manage contacts, sales orders, inventory, accounting, HRM, payroll, projects, expense claims, and documents — all from natural language inside Codex.",
   "author": {
     "name": "OPC Suite",
