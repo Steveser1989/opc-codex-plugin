@@ -61,6 +61,43 @@ Every tool call is audit-logged (agent name, scopes used, latency, status).
 
 ---
 
+## 🔄 Keeping the tool catalog fresh
+
+OPC's tools are served from the server, so upgrades reach you without
+reinstalling the plugin — but **Codex caches the tool list for the life of a
+connection**. After a server-side change (a new tool, a corrected argument
+schema) an already-connected session keeps using the catalog it fetched at
+startup. The symptom is confusing: the tool call fails with an error from the
+current backend, while the schema Codex shows you is the old one.
+
+Restart Codex, or re-run `codex mcp login opc`, and the new catalog is picked
+up.
+
+### Checking which catalog you have
+
+```bash
+curl -s https://www.myopc.io/api/mcp/health \
+  -H "Authorization: Bearer opc_pat_xxxxxxxxxxxxxxxx" | jq .catalog
+```
+
+```json
+{ "fingerprint": "5070e087", "delete_tool_count": 24 }
+```
+
+The fingerprint is derived from every tool's name, required fields and enums,
+so any schema change moves it. If the server reports a fingerprint but your
+session behaves as though the old schema is in force, it is the client cache —
+reconnect. `tool_count` in the same response tells you how many tools your
+token's scopes actually grant.
+
+### Cleaning up
+
+Every record the plugin can create, it can also delete — `delete_contact`,
+`delete_project`, `delete_payroll_run`, `delete_pay_component` and so on, 24 in
+all. They are marked destructive, so Codex will ask before calling one. Some
+are deliberately restricted server-side: a claim or an e-Invoice can only be
+deleted while it is still a draft.
+
 ## 🛠️ Advanced fallback — Personal API Token (for non-OAuth Codex builds)
 
 If you're on an older Codex version without MCP OAuth support, or you'd prefer to manage the token yourself, you can fall back to a Personal API Token (PAT):
