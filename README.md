@@ -81,14 +81,17 @@ curl -s https://www.myopc.io/api/mcp/health \
 ```
 
 ```json
-{ "fingerprint": "5070e087", "delete_tool_count": 24 }
+{ "fingerprint": "db704e6e", "delete_tool_count": 24 }
 ```
 
-The fingerprint is derived from every tool's name, required fields and enums,
-so any schema change moves it. If the server reports a fingerprint but your
-session behaves as though the old schema is in force, it is the client cache —
-reconnect. `tool_count` in the same response tells you how many tools your
-token's scopes actually grant.
+The fingerprint is derived from every tool's name, method, arguments, required
+fields and enums, so **any** schema change moves it. Don't match it against the
+literal above — that example goes stale the next time the catalog changes.
+Compare it across two points in time instead: note the value, reconnect, and
+check the server still reports the same one. If the server's value has moved
+but your session behaves as though the old schema is in force, it is the client
+cache — reconnect. `tool_count` in the same response tells you how many tools
+your token's scopes actually grant.
 
 ### Cleaning up
 
