@@ -13,13 +13,27 @@ OPC Suite gives any AI agent secure, audit-logged access to a complete business 
 
 ---
 
-## ⚡ Quick start (2 commands, no token setup)
+## ⚡ Quick start (install, then one-click OAuth — no token setup)
 
-### 1. Install from the Codex Plugin Marketplace
+### 1. Install the plugin
+
+Straight from GitHub, with the Codex Marketplace CLI:
 
 ```bash
+npx codex-marketplace add Steveser1989/opc-codex-plugin --plugin 0
+```
+
+Or, if your Codex build manages plugin marketplaces itself, add this repo as a
+marketplace source first and install from it:
+
+```bash
+codex plugin marketplace add Steveser1989/opc-codex-plugin
 codex plugin install opc
 ```
+
+Either route writes the same MCP entry — OPC as a streamable HTTP server at
+`https://www.myopc.io/api/mcp` — plus the two bundled skills. Listing:
+https://www.codex-marketplace.com/plugins/opc
 
 ### 2. One-click OAuth — Codex opens your browser, you click Approve
 
@@ -139,13 +153,14 @@ This path works on every Codex version (CLI and Desktop, old and new) but skips 
     └── sales-overview/  ← Skill: pull a sales pipeline summary
 ```
 
-The actual MCP server source lives at [`Steveser1989/Main-MY-OPC-System/packages/opc-mcp`](https://github.com/Steveser1989) and the OAuth + tool endpoints are served from `https://www.myopc.io/api/mcp`. All upgrades happen server-side — every connected agent picks them up immediately.
+The MCP server itself is closed-source and lives in a private repo, so there is no source link to follow — what is public is the contract: the tool catalogue is served from `https://www.myopc.io/api/mcp`, its OAuth metadata from `/.well-known/oauth-authorization-server`, and the live tool list from `/api/mcp/health` (documented at [myopc.io/mcp](https://www.myopc.io/mcp)). All upgrades happen server-side — every connected agent picks them up immediately.
 
 ---
 
 ## Links
 
 - 🌐 Website — https://www.myopc.io
+- 📖 MCP docs — https://www.myopc.io/mcp
 - 📖 Connect wizard — https://www.myopc.io/dashboard/settings/developer/ai-connections
 - 🔐 OAuth metadata — https://www.myopc.io/.well-known/oauth-authorization-server
 - 📦 npm — https://www.npmjs.com/package/@tsa-ai/opc-mcp-server
